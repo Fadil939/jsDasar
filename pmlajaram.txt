@@ -1,0 +1,642 @@
+Set
+Struktur data yang akan kita bahas berikutnya adalah Set. Set sederhananya merupakan kumpulan nilai (set of values). Hal yang membedakan Set dengan struktur data yang lain adalah data pada Set tidak berurutan dan juga tidak diindeks. Selain itu, data di dalam Set juga bersifat unik dan tidak ada duplikasi. Perhatikan contoh deklarasi Set di bawah ini:
+
+main.js
+1
+const numberSet = new Set([1, 4, 6, 4, 1]);
+2
+?
+3
+console.log(numberSet);
+4
+?
+5
+/* output
+6
+Set(3) { 1, 4, 6 }
+7
+*/
+
+
+Pada kode di atas terdapat beberapa angka yang duplikat, yaitu angka 1 dan 4. Secara otomatis Set akan membuang angka yang sama, sehingga nilai yang tersimpan adalah {1, 4, 6}.
+
+Untuk menambahkan data ke dalam Set kita bisa memanfaatkan fungsi add().
+
+main.js
+1
+const numberSet = new Set([1, 4, 6, 4, 1]);
+2
+numberSet.add(5);
+3
+numberSet.add(10);
+4
+numberSet.add(6);
+5
+?
+6
+console.log(numberSet);
+7
+?
+8
+/* output
+9
+Set(5) { 1, 4, 6, 5, 10 }
+10
+*/Ingat bahwa Set tidak memiliki urutan atau index, sehingga argumen yang dimasukkan ke dalam fungsi delete adalah nilai yang ingin dihapus, bukan index-nya.
+
+
+WeakMap & WeakSet
+WeakMap merupakan varian dari Map yang mendukung garbage collection. Garbage collection adalah proses di mana interpreter JavaScript mengambil kembali memori yang tidak lagi �dapat dijangkau� dan tidak dapat digunakan oleh program [3]. Garbage collection di JavaScript dilakukan secara otomatis dan bukan menjadi urusan dari developer.
+
+Yang dimaksud weak dalam WeakMap adalah referensi terhadap nilai yang disimpan. Apabila suatu nilai yang disimpan di WeakMap sudah tidak terjangkau atau tidak bisa lagi diakses, maka referensi ke memorinya akan dihapus.
+
+Berikut ini adalah beberapa hal yang membedakan antara Map dan WeakMap:
+
+Key dari WeakMap harus berupa object atau array. Nilai primitif tidak bisa digunakan sebagai key karena tidak mendukung garbage collection.
+WeakMap memiliki method get(), set(), has(), dan delete(). Namun, WeakMap tidak termasuk kategori iterable sehingga tidak memiliki method keys(), values(), atau forEach().
+WeakMap juga tidak memiliki property size. Ini karena ukuran WeakMap dapat berubah karena proses garbage collection.
+Masih bingung? Mari kita lihat contoh kode dan perbedaan antara Map dan WeakMap.
+
+main.js
+1
+const visitsCountMap = new Map(); // Menyimpan daftar user
+2
+?
+3
+function countUser(user) {
+4
+  let count = visitsCountMap.get(user) || 0;
+5
+  visitsCountMap.set(user, count + 1);
+6
+}
+7
+?
+8
+let jonas = { name: "Jonas" };
+9
+countUser(jonas);  // Menambahkan user "Jonas"
+10
+?
+11
+jonas = null;  // Data object "Jonas" dihapus
+12
+?
+13
+// delay dibutuhkan untuk menunggu garbage collector bekerja
+14
+setTimeout(function() {
+15
+  console.log(visitsCountMap);
+16
+}, 10000)
+17
+?
+18
+/* output
+19
+Map(1) { { name: 'Jonas' } => 1 }
+20
+*/
+ Input  Reset
+ Jalankan
+
+            
+setTimeout merupakan fungsi yang digunakan untuk menunda eksekusi kode yang ada di dalamnya hingga jangka waktu yang ditetapkan. Fungsi setTimeout akan detail dibahas pada modul concurrency.
+
+Ketika reference objek jonas dihapus dengan mengubahnya menjadi null, seharusnya map tidak lagi menyimpan data user (garbage collected). Namun, kenyataannya data jonas masih tersedia di dalam Map. Artinya, data jonas masih tersimpan di dalam memori sampai kita benar-benar menghapusnya.
+
+Berbeda jika kita menggunakan WeakMap seperti ini.
+
+const visitsCountMap = new WeakMap();
+Ketika nilai jonas sudah tidak bisa dijangkau, object jonas akan dihapus dari memori termasuk informasi yang disimpan di dalam WeakMap.
+
+main.js
+1
+const { inspect } = require('util');
+2
+?
+3
+const visitsCountMap = new WeakMap(); // Menyimpan daftar user
+4
+?
+5
+function countUser(user) {
+6
+  let count = visitsCountMap.get(user) || 0;
+7
+  visitsCountMap.set(user, count + 1);
+8
+}
+9
+?
+10
+let jonas = { name: "Jonas" };
+11
+countUser(jonas);  // Menambahkan user "Jonas"
+12
+?
+13
+jonas = null;  // Data object "Jonas" dihapus
+14
+?
+15
+// delay dibutuhkan untuk menunggu garbage collector bekerja
+16
+setTimeout(function() {
+17
+  console.log(inspect(visitsCountMap, { showHidden: true }));
+18
+}, 10000);
+19
+?
+20
+/* output
+ Input  Reset
+ Jalankan
+
+            
+WeakMap tidak dapat dilihat secara langsung menggunakan console.log. Ini merupakan issue yang terjadi pada Node.js (lihat: https://github.com/nodejs/node/issues/19001). Itulah mengapa kami menggunakan fungsi inspect untuk melihat data yang ada di dalam WeakMap.
+
+Jika hasil output tidak sesuai dengan yang diharapkan pada kode, hal itu disebabkan oleh waktu tunggu yang tidak cukup untuk menunjukkan cara kerja garbage collector. Silakan simak penjelasan pada diskusi berikut: https://www.dicoding.com/academies/256/discussions/156523
+
+Seperti halnya WeakMap, WeakSet adalah versi weak reference dari Set. Perbedaan antara WeakSet dan Set antara lain:
+
+WeakSet tidak bisa menyimpan nilai primitif.
+WeakSet bukan iterable dan hanya memiliki method add(), has(), dan delete().
+WeakSet tidak memiliki properti size.
+Untuk menyelesaikan masalah yang lebih kompleks secara efisien, kita membutuhkan struktur data yang lebih canggih dibandingkan variabel primitif. JavaScript memiliki tipe data lain yang dapat menyimpan banyak data sekaligus, contohnya seperti Object, Arrays, Map, dan Set.
+
+Beberapa hal yang telah kita bahas pada modul ini, antara lain:
+
+Object adalah tipe data kompleks untuk menyimpan banyak data dengan format key-value. Key pada object harus berupa string.
+Array digunakan untuk menyimpan banyak data. Data pada array disusun secara berurutan dan diakses menggunakan index.
+Map menyimpan banyak data dengan format key-value seperti object. Namun, key pada Map dapat bertipe apa pun.
+Set digunakan untuk menyimpan banyak data secara unik, tidak ada duplikasi, tidak berurutan, dan tidak diindeks.
+
+
+
+
+
+Function Parameter
+Pada materi sebelumnya, kita telah berkenalan dengan fungsi yang merupakan suatu blok kode yang dapat menerima input dan menghasilkan output tertentu. Input ke dalam sebuah fungsi dikirimkan melalui parameter.
+
+Di dalam fungsi kita akan banyak bertemu istilah parameter & argument. Penggunaan istilah ini sering kali tertukar, bahkan di kalangan developer. 
+
+Perbedaan mendasar antara keduanya antara lain:
+
+Parameter merupakan variabel yang didefinisikan sebagai input dari sebuah fungsi. Contoh:
+
+function multiply(a, b) {
+  return a * b;
+}
+Argument merupakan nilai atau expression yang dimasukkan ke dalam fungsi. Contohnya:
+
+multiply(3, 4);
+Parameter dari fungsi dapat berupa tipe data apa pun, mulai dari string, number, object, bahkan fungsi lain.
+
+Jika parameter dari fungsi adalah sebuah object, kita juga bisa memanfaatkan destructuring object untuk mendapatkan nilainya. Contohnya seperti berikut:
+
+main.js
+1
+const user = {
+2
+  id: 24,
+3
+  displayName: 'kren',
+4
+  fullName: 'Kylo Ren',
+5
+};
+6
+?
+7
+function introduce({displayName, fullName}) {
+8
+  console.log(`${displayName} is ${fullName}`);
+9
+}
+10
+?
+11
+introduce(user);
+12
+?
+13
+/* output
+14
+kren is Kylo Ren
+15
+*/
+ Input  Reset
+ Jalankan
+
+            
+
+
+Default Parameters
+Fungsi pada JavaScript tidak melakukan pengecekan terhadap jumlah maupun tipe argumen yang dimasukkan ke dalam parameter. Ini berarti kita bisa memasukkan argumen meskipun tidak sesuai dengan parameter yang telah didefinisikan.
+
+main.js
+1
+function exponentsFormula(baseNumber, exponent) {
+2
+  const result = baseNumber ** exponent;
+3
+  console.log(`${baseNumber}^${exponent} = ${result}`);
+4
+}
+5
+?
+6
+exponentsFormula(2);
+7
+?
+8
+/* output
+9
+2^undefined = NaN
+10
+*/
+ Input  Reset
+ Jalankan
+
+            
+Seperti yang kita lihat pada contoh kode di atas, ketika argumen lebih sedikit dari parameternya, maka parameter yang tidak terdefinisi akan bernilai undefined. Sebagai solusi jika memungkinkan, kita bisa memberikan nilai default pada parameter. Nilai ini akan digunakan jika kita tidak memasukkan parameter.
+
+main.js
+1
+function exponentsFormula(baseNumber, exponent = 2) {
+2
+  const result = baseNumber ** exponent;
+3
+  console.log(`${baseNumber}^${exponent} = ${result}`);
+4
+}
+5
+?
+6
+exponentsFormula(3);
+7
+?
+8
+/* output
+9
+3^2 = 9
+10
+*/
+ Input  Reset
+ Jalankan
+
+            
+
+
+Rest Parameter
+Masih ingat dengan spread operator (...)? Jika spread operator menyebarkan array menjadi beberapa elemen berbeda, rest parameter ini adalah kebalikan dari operator tersebut. Penasaran?
+
+Rest parameter juga dituliskan menggunakan three consecutive dots (...). Dengan rest parameter, kita dapat menggabungkan beberapa elemen menjadi satu array. Tentu teknik ini sangat bermanfaat ketika kita hendak membuat sebuah fungsi dengan parameter yang tidak pasti.
+
+Sebagai contoh adalah fungsi yang menjumlahkan seluruh nilai argumen seperti berikut:
+
+main.js
+1
+function sum(...numbers) {
+2
+  let result = 0;
+3
+  for (let number of numbers) {
+4
+    result += number;
+5
+  }
+6
+  return result;
+7
+}
+8
+?
+9
+console.log(sum(1, 2, 3, 4, 5));
+
+
+Arrow Function
+ES6 memperkenalkan fungsi baru yang dinamakan arrow function expression atau lebih dikenal sebagai arrow function. Arrow function mirip seperti regular function secara perilaku, tetapi berbeda dalam penulisannya. Sesuai namanya, fungsi didefinisikan menggunakan tanda panah atau fat arrow ( => ). Tentunya penulisan arrow function ini akan lebih singkat.
+
+Selain perbedaan sintaksis, terdapat perbedaan perilaku antara arrow function dan regular function. Regular function dapat berupa function declaration dan function expression. Namun, arrow function hanya berupa expression function saja. Itu sebabnya arrow function memiliki nama lengkap �arrow function expression�.
+
+Regular function
+Arrow function
+// function declaration
+function sayHello(greet) {
+  console.log(`${greet}!`);
+}
+ 
+// function expression
+const sayName = function (name) {
+  console.log(`Nama saya ${name}`)
+}
+Pada arrow function kita tidak perlu menuliskan keyword function setiap membuat fungsi. Kita tetap menuliskan parameter di dalam tanda kurung lalu diikuti dengan tanda panah (=>) sebelum kurung kurawal.
+
+const sayName = (name) => {
+  console.log(`Nama saya ${name}`)
+}
+Apabila fungsi hanya memiliki satu parameter, maka kita bisa menghapuskan tanda kurung seperti berikut:
+
+main.js
+1
+const sayName = name => {
+2
+  console.log(`Nama saya ${name}`)
+3
+}
+4
+?
+5
+sayName("Leia");
+6
+?
+7
+/* output
+8
+Nama saya Leia
+9
+ */
+ Input  Reset
+ Jalankan
+
+            
+Namun, jika kita sama sekali tidak membutuhkan parameter, maka kita tetap menuliskan tanda kurung namun kosong seperti ini:
+
+main.js
+1
+const sayHello = () => {
+2
+  console.log("Selamat pagi semuanya!")
+3
+};
+4
+?
+5
+sayHello();
+6
+?
+7
+/* output
+8
+Selamat pagi semuanya!
+9
+ */
+ Input  Reset
+ Jalankan
+
+            
+Satu hal yang menarik, ketika body dari function hanya terdiri dari satu baris, kita bisa menghapus tanda kurung kurawal. Tentunya ini akan menghemat baris kode yang kita tulis.
+
+main.js
+1
+const sayName = name => console.log(`Nama saya ${name}`);
+2
+sayName("Leia");
+3
+?
+4
+const sayHello = () => console.log("Selamat pagi semuanya!");
+5
+sayHello();
+6
+?
+7
+/* output
+8
+Nama saya Leia
+9
+Selamat pagi semuanya!
+10
+ */
+ Input  Reset
+ Jalankan
+
+            
+Ketika sebuah fungsi perlu mengembalikan nilai, kita tidak perlu lagi menuliskan return (hanya bekerja untuk fungsi satu baris).
+
+main.js
+1
+const multiply = (a, b) => a * b;
+2
+console.log(multiply(3, 4));
+3
+?
+4
+/* output
+5
+12
+6
+ */
+
+Variable Scope
+Sejauh ini kita sudah mengenal function. Setelah kita memisahkan kode ke dalam blok atau fungsi terpisah, ada satu hal penting yang perlu kita tahu, yaitu variable scoping. Ada banyak keadaan di mana kita membutuhkan variabel untuk diakses di seluruh script yang kita buat. Tetapi ada juga keadaan di mana kita ingin variabel tersebut hanya dapat diakses pada cakupan fungsi dan fungsi turunannya saja.
+
+Variabel yang dapat diakses dari seluruh script disebut dengan �globally scoped�, sementara variabel yang hanya diakses hanya pada fungsi tertentu disebut dengan �locally scoped�.
+
+Variabel JavaScript menggunakan fungsi untuk mengelola cakupannya. Jika variabel didefinisikan di luar fungsi, maka variabel tersebut bersifat global. Jika variabel didefinisikan di dalam fungsi, maka variabel bersifat lokal dan cakupannya hanya pada fungsi tersebut beserta turunannya.
+
+Berikut ini merupakan contoh scoping dalam kode:
+
+// global variable, dapat diakses pada parent() dan child()
+const a = 'a'; 
+ 
+function parent() {
+  // local variable, dapat diakses pada parent() dan child(), tetapi tidak dapat diakses di luar dari fungsi tersebut.
+  const b = 'b'; 
+    
+  function child() {
+    // local variable, dapat diakses hanya pada fungsi child().
+    const c = 'c';
+  }
+}
+Kita harus berhati-hati dalam mendefinisikan variabel di dalam fungsi. Pasalnya, kita bisa mendapatkan hasil yang tidak diperkirakan, contohnya seperti berikut:
+
+main.js
+1
+function multiply(num) {
+2
+  total = num * num;
+3
+  return total;
+4
+}
+5
+?
+6
+let total = 9;
+7
+let number  = multiply(20);
+8
+?
+9
+console.log(total)
+10
+?
+11
+/* output
+12
+400
+13
+*/
+ Input  Reset
+ Jalankan
+
+            
+Mungkin kita berharap nilai total akan tetap 9, mengingat variabel total pada fungsi multiply seharusnya tidak akan berpengaruh untuk kode di luar dari fungsi tersebut. Hal ini bisa terjadi karena pada fungsi multiply() kita tidak menetapkan variabel total sebagai cakupan lokal. Kita tidak menggunakan keyword const atau let ketika mendeklarasikan variabel total pada fungsi multiply() sehingga variabel total menjadi global.
+
+Perlu kita perhatikan, jika kita lupa menuliskan keyword let, const, atau var pada script ketika membuat sebuah variabel, maka variabel tersebut akan menjadi global.
+
+Sebisa mungkin kita harus menghindari pembuatan variabel global, karena variabel global dapat diakses pada seluruh script yang kita tuliskan. Semakin banyak variabel global yang kita tuliskan, semakin tinggi kemungkinan tabrakan (collision) terjadi.
+
+Closure
+Setelah mempelajari tentang scope pada materi sebelumnya, kali ini kita akan membahas seputar closure. Sebelumnya kita telah tahu bahwa fungsi dapat didefinisikan dalam lingkup global atau di dalam fungsi lain. Suatu fungsi yang dapat mengakses variabel di dalam lexical scope-nya disebut dengan closure. Lexical scope berarti pada sebuah fungsi bersarang, fungsi yang berada di dalam memiliki akses ke variabel di lingkup induknya.
+
+main.js
+1
+function init() {
+2
+  const name = 'Obi Wan';   // Variabel lokal di dalam scope fungsi init
+3
+    
+4
+  function greet() {      // Inner function, merupakan contoh closure
+5
+    console.log(`Halo, ${name}`);   // Memanggil variabel yang dideklarasikan di parent function
+6
+  }
+7
+?
+8
+  greet();
+9
+}
+10
+?
+11
+init();
+12
+?
+13
+/* output
+14
+Halo, Obi Wan
+15
+ */
+ Input  Reset
+ Jalankan
+
+            
+Fungsi init() memiliki variabel lokal name dan fungsi greet(). Fungsi greet() adalah inner function yang didefinisikan di dalam init() dan hanya bisa diakses dari dalam fungsi init(). Perhatikan bahwa fungsi greet() tidak memiliki variabel lokal. Namun, karena inner function memiliki akses ke variabel di parent function-nya, sehingga greet() dapat mengakses variabel name. Itulah yang dimaksud dengan lexical scope.
+
+Sekarang perhatikan contoh kode berikut:
+
+main.js
+1
+function init() {
+2
+  const name = 'Obi Wan';
+3
+?
+4
+  function greet() {
+5
+    console.log(`Halo, ${name}`);
+6
+  }
+7
+?
+8
+  return greet;
+9
+}
+10
+?
+11
+const myFunction = init();
+12
+myFunction();
+13
+?
+14
+/* output
+15
+Halo, Obi Wan
+16
+ */
+ Input  Reset
+ Jalankan
+
+            
+Kode di atas akan menghasilkan output yang sama. Perbedaannya adalah fungsi greet() dikembalikan (return) dari outer function-nya sebelum dieksekusi. Karena variabel name berada dalam scope init(), maka umumnya variabel tersebut akan hilang atau dihapus ketika fungsinya selesai dijalankan. Namun, pada kasus di atas fungsi greet() yang diakses melalui fungsi MyFunction() masih memiliki referensi atau akses ke variabel name. Variabel pada mekanisme di atas telah tertutup (close covered), yang berarti variabel tersebut berada di dalam closure.
+
+Memang di awal cukup sulit untuk memahami closure. Jadi, mari kita lihat langsung untuk apa closure ini digunakan pada suatu program yang nyata.
+
+JavaScript tidak memiliki cara untuk mendeklarasikan suatu fungsi atau variabel menjadi private seperti bahasa Java. Sehingga sebuah fungsi atau variabel bisa diakses dari mana pun. Kenapa kita membutuhkan private method? Salah satunya adalah untuk membatasi akses ke fungsi atau variabel. Perhatikan contoh berikut:
+
+main.js
+1
+let counter = 0;
+2
+?
+3
+const add = () => {
+4
+  return ++counter;
+5
+}
+6
+?
+7
+console.log(add());
+8
+console.log(add());
+9
+counter = 23;
+10
+console.log(add());
+11
+?
+12
+/* output
+13
+1
+14
+2
+15
+24
+16
+ */
+ Input  Reset
+ Jalankan
+
+            
+Nilai counter akan bertambah ketika kita memanggil fungsi add(). Namun, kita juga bisa mengubah nilai counter secara langsung dengan assignment operator. Pada contoh program yang lebih kompleks, sebaiknya hal ini dihindari karena perubahan langsung pada nilai counter bisa saja memunculkan bug.
+
+Closure memungkinkan kita membuat fungsi dan variabel seolah menjadi private. Seperti inilah contoh program counter yang dibuat dengan closure:
+
+main.js
+1
+const add = () => {
+2
+  let counter = 0;
+3
+    return () => {
+4
+      return ++counter;
+5
+  };
+6
+}
+7
+?
+8
+const addCounter = add();
+9
+?
+10
+console.log(addCounter());
