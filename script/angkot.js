@@ -1,15 +1,4 @@
-//fitur angkot
-//tambah penumpang/
-// menerima 2 parameter
-//!nama penumpang ,array penumpang
-// ! rules
-// jika angkot kosong maka penumpang duduk di kursi pertama
-// penumpang selanjut nya akan duduk secara berurutan
-//jika kursi kosong maka .penumpang yang naik berikutnya duduk di kursi kosong terlebih dahulu
-//nama penumpang tidk boleh sama ,untuk mengihindari kebigungan ketika penumpang turun
-
-//hapus penumpang
-let penumpang = ["fadil", undefined, "dika"];
+let penumpang = ["fadil", undefined, "andi"];
 let tambahPenumpang = function (namaPenumpang, penumpang) {
   //jika angkot kosong
   if (penumpang.length == 0) {
@@ -35,6 +24,24 @@ let tambahPenumpang = function (namaPenumpang, penumpang) {
         //tambah penumpang di akhir array
         penumpang.push(namaPenumpang);
         //kembalikan isi array dan keluar dari function
+        return penumpang;
+      }
+    }
+  }
+};
+//!hapus penumpang
+let hapusPenumpang = function (namaPenumpang, penumpang) {
+  //jika angkot kosong
+  if (penumpang.length == 0) {
+    console.log("angkot tidak ada penumpang");
+    return penumpang;
+  } else {
+    for (let i = 0; i < penumpang.length; i++) {
+      if (penumpang[i] == namaPenumpang) {
+        penumpang[i] = undefined;
+        return penumpang;
+      } else if (i == penumpang.length - 1) {
+        console.log(namaPenumpang + " tidak ada di dalam angkot");
         return penumpang;
       }
     }
