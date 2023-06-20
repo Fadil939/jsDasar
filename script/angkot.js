@@ -32,9 +32,9 @@ let tambahPenumpang = function (namaPenumpang, penumpang) {
 //!hapus penumpang
 let hapusPenumpang = function (namaPenumpang, penumpang) {
   //jika angkot kosong
-  if (penumpang.length == 0) {
+  if (penumpang.length === 0) {
     console.log("angkot tidak ada penumpang");
-    return penumpang;
+    return false;
   } else {
     for (let i = 0; i < penumpang.length; i++) {
       if (penumpang[i] == namaPenumpang) {
